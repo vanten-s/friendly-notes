@@ -3,7 +3,7 @@
 import socket
 
 
-IP = "127.0.0.6"
+IP = "127.0.0.7"
 PORT = 42069
 
 ADDR = (IP, PORT)
