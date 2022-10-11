@@ -8,9 +8,10 @@ PORT = 42069
 
 ADDR = (IP, PORT)
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(ADDR)
+
 while True:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(ADDR)
     Packet = input("-> ")
 
     s.send(Packet.encode("utf-8"))
