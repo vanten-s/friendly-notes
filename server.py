@@ -6,7 +6,7 @@ import time
 
 OpenedFile = ""
 RecievedData = ""
-IP = "127.0.0.2"
+IP = "127.0.0.1"
 PORT = 42069
 
 ADDR = (IP, PORT)
@@ -32,7 +32,7 @@ while True:
         case "r":
             with open(RecievedData[1:], "r") as OpenedFile:
                 conn.send(OpenedFile.read().encode("utf-8"))
-                print("Sent -> " + OpenedFile.read())
+                print("read")
                 OpenedFile.close()
         
         case "w":
@@ -45,9 +45,14 @@ while True:
                 
                 OpenedFile.write(RecievedData)
                 OpenedFile.close()
-                print("CLOSED")
+                print("written")
+                conn.send("Written".encode("utf-8"))
             
-            
+        case "x":
+            with open(RecievedData[1:], "x") as OpenedFile:
+                OpenedFile.close()
+                conn.send("Created".encode("utf-8"))
+                print("created")
         
         
         
