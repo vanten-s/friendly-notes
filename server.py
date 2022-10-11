@@ -2,11 +2,11 @@
     
 
 import socket
-
+import time
 
 OpenedFile = ""
 RecievedData = ""
-IP = "127.0.0.1"
+IP = "127.0.0.2"
 PORT = 42069
 
 ADDR = (IP, PORT)
@@ -30,19 +30,25 @@ while True:
 
     match RecievedData[0]:
         case "r":
-            OpenedFile = open(RecievedData[1:], "r")
-            conn.send(OpenedFile.read().encode("utf-8"))
+            with open(RecievedData[1:], "r") as OpenedFile:
+                conn.send(OpenedFile.read().encode("utf-8"))
+                print("Sent -> " + OpenedFile.read())
+                OpenedFile.close()
         
         case "w":
-            OpenedFile = open(RecievedData[1:], "w")
-            conn.send("Enter text now".encode("utf-8"))
-            RecievedData = ""
-            while RecievedData == "":
+            with open(RecievedData[1:], "w") as OpenedFile:
+                conn.send("Send".encode("utf-8"))
+                uwu = ""
+                conn.close()
+                conn, addr = s.accept()
                 RecievedData = conn.recv(1024).decode("utf-8")
-                print("uwu")
+                
+                OpenedFile.write(RecievedData)
+                OpenedFile.close()
+                print("CLOSED")
             
-            print(RecievedData)
-            OpenedFile.write(RecievedData)
-
+            
+        
+        
         
     conn.close()
