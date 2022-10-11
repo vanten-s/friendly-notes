@@ -1,7 +1,11 @@
 
+
 import socket
 
-IP = "127.0.0.1"
+
+OpenedFile = ""
+RecievedData = ""
+IP = "127.0.0.6"
 PORT = 42069
 
 ADDR = (IP, PORT)
@@ -11,9 +15,24 @@ s.bind(ADDR)
 
 s.listen(0)
 
+
+
+
+
 # Server Mainloop
 while True:
     conn, addr = s.accept()
-    conn.recv(1024)
-    conn.send("Bye Bye!".encode("utf-8"))
+    RecievedData = conn.recv(1024).decode("utf-8")
+
+
+
+
+    
+    if RecievedData[0] == "r":
+
+        OpenedFile = open("test.txt", "r")
+        packet = OpenedFile.read()
+        conn.send(packet.encode("utf-8"))
+
     conn.close()
+    
