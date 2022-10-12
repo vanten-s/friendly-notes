@@ -49,6 +49,7 @@ while not pr.window_should_close():
     pr.begin_drawing()
     # TODO
     # ADD KEYBOARD SUPPORT
+    # ACTUALLY USE THE SERVER
     pr.clear_background(pr.Color(0, 0, 0, 0))
     # pr.draw_rectangle(37, 0, 25, 100, pr.Color(255, 255, 255, 255))
     # pr.draw_rectangle(0, 37, 100, 25, pr.Color(255, 255, 255, 255))
