@@ -37,14 +37,31 @@ class Note:
         if self.focused: pr.draw_rectangle(self.x-5, self.y-5, self.width+10, self.height+10, pr.Color(255, 0, 0, 255))
         pr.draw_rectangle(self.x, self.y, self.width, self.height, self.col)
         text_width = pr.measure_text_ex(font, self.text, 20, 2)
+        if text_width.x >= self.width-15:
+            for i in range(len(self.text)):
+                if pr.measure_text_ex(font, self.text[:i+1], 20, 2).x >= self.width-10:
+                    final = i
+                    break
+       
+            try:
+                self.text = self.text[:final] + "\n" + self.text[final:]
+        
+            except UnboundLocalError:
+                print("Got some weird error lol")
+        
+        text_width = pr.measure_text_ex(font, self.text, 20, 2)
         print(text_width.x)
-        if text_width.x >= self.width-10:
+        if text_width.x >= self.width-15:
             for i in range(len(self.text.split(" "))):
                 if pr.measure_text_ex(font, " ".join(self.text.split()[:i+1]), 20, 2).x >= self.width-10:
                     final = i
                     break
         
-            self.text = " ".join(self.text.split(" ")[:final] + ["\n"] + self.text.split(" ")[final:])
+            self.text = " ".join(self.text.split(" ")[:final] ["\n"] + self.text.split(" ")[final:])
+
+        print(self.text)
+
+                
 
         height = pr.measure_text_ex(font, "abcdefghijklmnopqrstuvwxyzåäö", 20, 2).y
         current_height = 0
@@ -52,7 +69,7 @@ class Note:
             pr.draw_text_ex(font, line, pr.Vector2(self.x+10, self.y+10+current_height), 20, 2, pr.Color(255, 255, 255, 255))
             current_height += height
             
-        pr.draw_rectangle(self.cursorPos[0]*12, self.cursorPos[1]*12, 10, 20, pr.Color(0, 0, 0, 0)) 
+        pr.draw_rectangle(self.cursorPos[0]*12, self.cursorPos[1]*12, 10, 20, pr.Color(0, 0, 0, 0))
 
 # Init gui
 pr.set_config_flags(pr.FLAG_WINDOW_RESIZABLE | pr.FLAG_WINDOW_TRANSPARENT )  # type: ignore
@@ -94,6 +111,16 @@ while not pr.window_should_close():
     if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT):
         current_note += 1
         current_note = current_note % len(notes)
+   
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_BACKSPACE):
+        try:
+            notes[current_note].text = notes[current_note].text[:len(notes[current_note].text)-1]
+            
+        except:
+            pass
+   
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_ENTER):
+        notes[current_note].text += "\n"
     
     pr.end_drawing()
     
