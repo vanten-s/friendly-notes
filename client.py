@@ -1,7 +1,6 @@
 
 import socket
 import pyray as pr
-from pyray import KeyboardKey as kk
 import os
 
 # Connect to server 
@@ -13,8 +12,8 @@ import os
 # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # s.connect(ADDR)
 
-notes = []
-currentNote = 0
+notes: list = []
+current_note = 0
 
 class Note:
     def __init__(self, x: int, y: int, col: pr.Color) -> None:
@@ -25,11 +24,34 @@ class Note:
         self.col = col
         self.text = ""
         self.cursorPos = (0, 0)
+        self.focused = False
         notes.append(self)
         
+    def set_focused(self):
+        self.focused = True
+    
+    def reset_focused(self):
+        self.focused = False
+        
     def render(self):
+        if self.focused: pr.draw_rectangle(self.x-5, self.y-5, self.width+10, self.height+10, pr.Color(255, 0, 0, 255))
         pr.draw_rectangle(self.x, self.y, self.width, self.height, self.col)
-        pr.draw_text_ex(font, self.text, pr.Vector2(self.x+10, self.y+10), 20, 2, pr.Color(255, 255, 255, 255))
+        text_width = pr.measure_text_ex(font, self.text, 20, 2)
+        print(text_width.x)
+        if text_width.x >= self.width-10:
+            for i in range(len(self.text.split(" "))):
+                if pr.measure_text_ex(font, " ".join(self.text.split()[:i+1]), 20, 2).x >= self.width-10:
+                    final = i
+                    break
+        
+            self.text = " ".join(self.text.split(" ")[:final] + ["\n"] + self.text.split(" ")[final:])
+
+        height = pr.measure_text_ex(font, "abcdefghijklmnopqrstuvwxyzåäö", 20, 2).y
+        current_height = 0
+        for line in self.text.split("\n"):
+            pr.draw_text_ex(font, line, pr.Vector2(self.x+10, self.y+10+current_height), 20, 2, pr.Color(255, 255, 255, 255))
+            current_height += height
+            
         pr.draw_rectangle(self.cursorPos[0]*12, self.cursorPos[1]*12, 10, 20, pr.Color(0, 0, 0, 0)) 
 
 # Init gui
@@ -44,8 +66,14 @@ font = pr.load_font_ex("roboto.ttf", 20, None, 0)
 # Might add later
 
 Note(100, 100, pr.Color(200, 100, 0, 255))
+Note(500, 100, pr.Color(100, 200, 0, 255))
 
 while not pr.window_should_close():
+    
+    for i in range(0, len(notes)):
+        if current_note == i: notes[i].set_focused()
+        else: notes[i].reset_focused()
+    
     pr.begin_drawing()
     # TODO
     # ADD KEYBOARD SUPPORT
@@ -54,14 +82,18 @@ while not pr.window_should_close():
     # pr.draw_rectangle(37, 0, 25, 100, pr.Color(255, 255, 255, 255))
     # pr.draw_rectangle(0, 37, 100, 25, pr.Color(255, 255, 255, 255))
     for note in notes:
-        note.render()   
+        note.render()
     
     char_pressed = pr.get_char_pressed()
     
     if char_pressed != 0:
         print(chr(char_pressed))
         char = chr(char_pressed)
-        notes[currentNote].text += char
+        notes[current_note].text += char
+
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT):
+        current_note += 1
+        current_note = current_note % len(notes)
     
     pr.end_drawing()
     
