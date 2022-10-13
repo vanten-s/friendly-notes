@@ -26,7 +26,7 @@ s.listen(0)
 while True:
     conn, addr = s.accept()
     RecievedData = conn.recv(1024).decode("utf-8")
-
+    print(RecievedData)
 
 
 
