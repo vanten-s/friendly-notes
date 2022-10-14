@@ -46,6 +46,7 @@ class Note:
         
             except UnboundLocalError:
                 print("Got some weird error lol")
+                print("Famous last words")
         
         # Try to break in beetween words
         text_width = pr.measure_text_ex(font, self.text, 20, 2)
@@ -63,6 +64,7 @@ class Note:
 
             except UnboundLocalError:
                 print("Got some weird error lol")
+                print("Famous last words")
 
         print(self.text)
 
@@ -163,6 +165,14 @@ while not pr.window_should_close():
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_ENTER):
         notes[current_note].text += "\n"
+    
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT_CONTROL):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(ADDR)
+        s.send("q".encode("utf-8"))
+        s.close()
+        break
+   
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT_CONTROL):
         old_packet = packet

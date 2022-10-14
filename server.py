@@ -16,7 +16,7 @@ s.bind(ADDR)
 
 s.listen(0)
 
-print("Listening!")
+print("UwUing")
 
 # Server Mainloop
 while True:
@@ -49,6 +49,7 @@ while True:
                     uwu = ""
             
             # reset connection to recieve another package
+            # yes, cursed indeed
                     conn.close()
                     conn, addr = s.accept()
                     RecievedData = conn.recv(1024).decode("utf-8")
