@@ -1,6 +1,7 @@
 from struct import pack
 import socket
 import pyray as pr
+import random
 
 IP = "127.0.0.1"
 PORT = 42069
@@ -155,6 +156,10 @@ while not pr.window_should_close():
             
         except:
             pass
+        
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_N):
+        if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            Note(random.randint(0, 1000), random.randint(0, 1000), pr.Color(random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255), 255))
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_ENTER):
         notes[current_note].text += "\n"
