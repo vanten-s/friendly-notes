@@ -1,5 +1,9 @@
 
-    
+
+
+
+
+
 
 import socket
 import os
@@ -31,6 +35,8 @@ while True:
 
 
     match RecievedData[0]:
+        # read specified file
+        # how to use: send "r<filename.extension>"
         case "r":
             if os.path.exists(RecievedData[1:]):
                 with open(RecievedData[1:], "r") as OpenedFile:
@@ -41,16 +47,21 @@ while True:
                 conn.send("File doesn't exist".encode("utf-8"))
                 print("File doesn't exist")
                 
-                
+        # write to specified file
+        # how to use: send w<filename.extension>
+        # then send another package with the data
         case "w":
             if os.path.exists(RecievedData[1:]):
                 with open(RecievedData[1:], "w") as OpenedFile:
                     conn.send("Send".encode("utf-8"))
                     uwu = ""
+            
+            # reset connection to recieve another package
                     conn.close()
                     conn, addr = s.accept()
                     RecievedData = conn.recv(1024).decode("utf-8")
-
+            
+            # write to file
                     OpenedFile.write(RecievedData)
                     OpenedFile.close()
                     print("written")
@@ -58,7 +69,9 @@ while True:
             else:
                 conn.send("File doesn't exist".encode("utf-8"))
                 print("File doesn't exist")
-            
+        
+        # create specified file
+        # how to use: send x<filename.extension>
         case "x":
             if os.path.exists(RecievedData[1:]):
                 conn.send("File already exists".encode("utf-8"))
@@ -68,7 +81,8 @@ while True:
                     OpenedFile.close()
                     conn.send("Created".encode("utf-8"))
                     print("created")
-        
+        # format specified file
+        # how to use: send f<filename.extension>
         case "f":
             if os.path.exists(RecievedData[1:]):
                 os.remove(RecievedData[1:])
