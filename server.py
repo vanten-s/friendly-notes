@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 import socket
 import os
 import time
@@ -22,9 +16,7 @@ s.bind(ADDR)
 
 s.listen(0)
 
-
-
-
+print("Listening!")
 
 # Server Mainloop
 while True:

@@ -1,12 +1,6 @@
 from struct import pack
-import time
 import socket
 import pyray as pr
-import os
-
-
-
-
 
 IP = "127.0.0.1"
 PORT = 42069
@@ -124,8 +118,36 @@ while not pr.window_should_close():
         notes[current_note].text += char
 
     if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT):
-        current_note += 1
-        current_note = current_note % len(notes)
+        if not pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            current_note += 1
+            current_note = current_note % len(notes)
+            
+        else:
+            notes[current_note].x += 5
+            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
+                notes[current_note].x += 10
+            
+    elif pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT):
+        if not pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            current_note -= 1
+            current_note = current_note % len(notes)
+            
+        else:
+            notes[current_note].x -= 5
+            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
+                notes[current_note].x -= 10
+            
+    if pr.is_key_pressed(pr.KeyboardKey.KEY_UP):
+        if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            notes[current_note].y -= 5
+            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
+                notes[current_note].y -= 10
+            
+    elif pr.is_key_pressed(pr.KeyboardKey.KEY_DOWN):
+        if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            notes[current_note].y += 5
+            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
+                notes[current_note].y += 10
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_BACKSPACE):
         try:
@@ -151,12 +173,6 @@ while not pr.window_should_close():
             print(s.recv(1024).decode("utf-8"))
             s.close()
           
-
-
-
-
-
-
     pr.end_drawing()
     
 pr.close_window()
