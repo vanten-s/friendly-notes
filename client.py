@@ -84,7 +84,7 @@ class Note:
             current_height = round(current_height + self.y+10 - height)
             print(x)
             print(current_height)
-            pr.draw_rectangle(x, current_height, 5, 20, pr.Color(255, 255, 255, 255))
+            pr.draw_rectangle(x+1, current_height, 1, 20, pr.Color(255, 255, 255, 255))
 
 # Init gui
 pr.set_config_flags(pr.FLAG_WINDOW_RESIZABLE | pr.FLAG_WINDOW_TRANSPARENT )  # type: ignore
