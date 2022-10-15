@@ -2,6 +2,7 @@ from struct import pack
 import socket
 import pyray as pr
 import random
+import json
 
 IP = "127.0.0.1"
 PORT = 42069
@@ -12,7 +13,7 @@ notes: list = []
 current_note = 0
 packet = ""
 class Note:
-    def __init__(self, x: int, y: int, col: pr.Color) -> None:
+    def __init__(self, x: int, y: int, col: pr.Color, text: str="") -> None:
         self.x = x
         self.y = y
         self.height = 500
@@ -146,14 +147,16 @@ while not pr.window_should_close():
     if pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT_CONTROL):
         old_packet = packet
         packet = notes[current_note].text
+        jsonObject = {"x": notes[current_note].x, "y": notes[current_note].y, "w": notes[current_note].width, "h": notes[current_note].height, "r": notes[current_note].col.r, "g": notes[current_note].col.g, "b": notes[current_note].col.b, "a": notes[current_note].col.a, "text": notes[current_note].text}
+        jsonString = json.dumps(jsonObject)
         if (packet != old_packet):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect(ADDR)
-            s.send("wtest.txt".encode("utf-8"))
+            s.send(f"wnote{current_note}.json".encode("utf-8"))
             s.close()
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect(ADDR)
-            s.send(packet.encode("utf-8"))
+            s.send(jsonString.encode("utf-8"))
             print(s.recv(1024).decode("utf-8"))
             s.close()
           

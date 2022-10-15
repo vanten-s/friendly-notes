@@ -43,37 +43,22 @@ while True:
         # how to use: send w<filename.extension>
         # then send another package with the data
         case "w":
-            if os.path.exists(RecievedData[1:]):
-                with open(RecievedData[1:], "w") as OpenedFile:
-                    conn.send("Send".encode("utf-8"))
-                    uwu = ""
+            with open(RecievedData[1:], "w") as OpenedFile:
+                conn.send("Send".encode("utf-8"))
+                uwu = ""
             
-            # reset connection to recieve another package
-            # yes, cursed indeed
-                    conn.close()
-                    conn, addr = s.accept()
-                    RecievedData = conn.recv(1024).decode("utf-8")
+                # reset connection to recieve another package
+                # yes, cursed indeed
+                conn.close()
+                conn, addr = s.accept()
+                RecievedData = conn.recv(1024).decode("utf-8")
             
-            # write to file
-                    OpenedFile.write(RecievedData)
-                    OpenedFile.close()
-                    print("written")
-                    conn.send("Written".encode("utf-8"))
-            else:
-                conn.send("File doesn't exist".encode("utf-8"))
-                print("File doesn't exist")
+                # write to file
+                OpenedFile.write(RecievedData)
+                OpenedFile.close()
+                print("written")
+                conn.send("Written".encode("utf-8"))
         
-        # create specified file
-        # how to use: send x<filename.extension>
-        case "x":
-            if os.path.exists(RecievedData[1:]):
-                conn.send("File already exists".encode("utf-8"))
-                print("File already exists")
-            else:
-                with open(RecievedData[1:], "x") as OpenedFile:
-                    OpenedFile.close()
-                    conn.send("Created".encode("utf-8"))
-                    print("created")
         # format specified file
         # how to use: send f<filename.extension>
         case "f":
