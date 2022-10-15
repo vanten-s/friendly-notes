@@ -13,13 +13,13 @@ notes: list = []
 current_note = 0
 packet = ""
 class Note:
-    def __init__(self, x: int, y: int, col: pr.Color, text: str="") -> None:
+    def __init__(self, x: int, y: int, h: int, w: int, col: pr.Color, text: str="") -> None:
         self.x = x
         self.y = y
-        self.height = 500
-        self.width = 300
+        self.height = h 
+        self.width = w 
         self.col = col
-        self.text = ""
+        self.text = text
         self.cursorPos = (0, 0)
         self.focused = False
         notes.append(self)
@@ -45,8 +45,6 @@ class Note:
         if self.focused:
             x = round(pr.measure_text_ex(font, last_line, 20, 2).x + self.x+10)
             current_height = round(current_height + self.y+10 - height)
-            print(x)
-            print(current_height)
             pr.draw_rectangle(x+1, current_height, 1, 20, pr.Color(255, 255, 255, 255))
 
 # Init gui
@@ -60,8 +58,35 @@ font = pr.load_font_ex("roboto.ttf", 20, None, 0)
 # NO MOUSE SUPPORT
 # Might add later
 
-Note(100, 100, pr.Color(200, 100, 0, 255))
-Note(500, 100, pr.Color(100, 200, 0, 255))
+def loadNote(num):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(ADDR)
+    s.send(f"rnote{num}.json".encode("utf-8"))
+    try:
+        note = json.loads(s.recv(1024).decode("utf-8"))
+        
+        x = note["x"]
+        y = note["y"]
+        w = note["w"]
+        h = note["h"]
+        
+        col = pr.Color(note["r"], note["g"], note["b"], note["a"])
+        text = note["text"]
+        
+        print(text)
+        
+    except Exception as e:
+        print(e)
+        return None
+        
+    return Note(x, y, h, w, col, text)
+
+i = 0
+while loadNote(i):
+    i += 1
+    
+if len(notes) == 0:
+    Note(0, 0, 500, 300, pr.Color(0, 0, 0, 255))
 
 while not pr.window_should_close():
     
@@ -82,7 +107,6 @@ while not pr.window_should_close():
     char_pressed = pr.get_char_pressed()
     
     if char_pressed != 0:
-        print(chr(char_pressed))
         char = chr(char_pressed)
         notes[current_note].text += char
 
@@ -131,7 +155,7 @@ while not pr.window_should_close():
         
     if pr.is_key_pressed(pr.KeyboardKey.KEY_N):
         if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
-            Note(random.randint(0, 1000), random.randint(0, 1000), pr.Color(random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255), 255))
+            Note(random.randint(0, 1000), random.randint(0, 1000), 500, 300, pr.Color(random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255), 255))
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_ENTER):
         notes[current_note].text += "\n"
@@ -157,7 +181,6 @@ while not pr.window_should_close():
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect(ADDR)
             s.send(jsonString.encode("utf-8"))
-            print(s.recv(1024).decode("utf-8"))
             s.close()
           
     pr.end_drawing()

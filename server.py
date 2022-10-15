@@ -36,7 +36,7 @@ while True:
                     print("read")
                     OpenedFile.close()
             else:
-                conn.send("File doesn't exist".encode("utf-8"))
+                conn.send(f"File doesn't exist {RecievedData[1:]}".encode("utf-8"))
                 print("File doesn't exist")
                 
         # write to specified file
