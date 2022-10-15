@@ -33,41 +33,6 @@ class Note:
         if self.focused: pr.draw_rectangle(self.x-5, self.y-5, self.width+10, self.height+10, pr.Color(255, 0, 0, 255))
         pr.draw_rectangle(self.x, self.y, self.width, self.height, self.col)
         
-        # Try to break in the middle of a word
-        text_width = pr.measure_text_ex(font, self.text, 20, 2)
-        if text_width.x >= self.width-15:
-            for i in range(len(self.text)):
-                if pr.measure_text_ex(font, self.text[:i+1], 20, 2).x >= self.width-10:
-                    final = i
-                    break
-       
-            try:
-                self.text = self.text[:final] + "\n" + self.text[final:]
-        
-            except UnboundLocalError:
-                print("Got some weird error lol")
-                print("Famous last words")
-        
-        # Try to break in beetween words
-        text_width = pr.measure_text_ex(font, self.text, 20, 2)
-        print(text_width.x)
-        if text_width.x >= self.width-15:
-            for i in range(len(self.text.split(" "))):
-                if pr.measure_text_ex(font, " ".join(self.text.split()[:i+1]), 20, 2).x >= self.width-10:
-                    final = i
-                    break
-        
-            try:
-                print(type(final))
-                print(final)
-                self.text = " ".join(self.text.split(" ")[:final] + ["\n"] + self.text.split(" ")[final:])
-
-            except UnboundLocalError:
-                print("Got some weird error lol")
-                print("Famous last words")
-
-        print(self.text)
-
         # Render Text
         height = pr.measure_text_ex(font, "abcdefghijklmnopqrstuvwxyzåäö", 20, 2).y
         current_height = 0
@@ -119,6 +84,10 @@ while not pr.window_should_close():
         print(chr(char_pressed))
         char = chr(char_pressed)
         notes[current_note].text += char
+
+        if pr.measure_text_ex(font, notes[current_note].text, 20, 2).x > notes[current_note].width-20:
+            notes[current_note].text = notes[current_note].text[:-1]
+            notes[current_note].text += "\n" + char
 
     if pr.is_key_pressed(pr.KeyboardKey.KEY_RIGHT):
         if not pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
