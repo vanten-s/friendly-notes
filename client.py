@@ -3,6 +3,7 @@ import socket
 import pyray as pr
 import random
 import json
+import sys
 
 IP = "127.0.0.1"
 PORT = 42069
@@ -81,12 +82,13 @@ def loadNote(num):
         
     return Note(x, y, h, w, col, text)
 
-i = 0
-while loadNote(i):
-    i += 1
-    
+if not "-i" in sys.argv:
+    i = 0
+    while loadNote(i):
+        i += 1
+        
 if len(notes) == 0:
-    Note(0, 0, 500, 300, pr.Color(0, 0, 0, 255))
+    Note(100, 100, 500, 300, pr.Color(0, 0, 0, 255))
 
 while not pr.window_should_close():
     

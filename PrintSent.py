@@ -6,7 +6,7 @@ import os
 import time
 
 OpenedFile = ""
-RecievedData = ""
+recieved_data = ""
 IP = "127.0.0.1"
 PORT = 42069
 
@@ -20,6 +20,6 @@ s.listen(0)
 
 while True:
     conn, addr = s.accept()
-    RecievedData = conn.recv(1024).decode("utf-8")
-    print(RecievedData)
+    recieved_data = conn.recv(1024).decode("utf-8")
+    print(recieved_data)
     conn.close()
