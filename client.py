@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from struct import pack
 import socket
 import pyray as pr
