@@ -4,6 +4,7 @@ import pyray as pr
 import random
 import json
 import sys
+import datetime
 
 IP = "127.0.0.1"
 PORT = 42069
@@ -59,13 +60,26 @@ font = pr.load_font_ex("roboto.ttf", 20, None, 0)
 # NO MOUSE SUPPORT
 # Might add later
 
-def loadNote(num):
+def loadNotes():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(ADDR)
-    s.send(f"rnote{num}.json".encode("utf-8"))
+    s.send(f"rnotes.json".encode("utf-8"))
+    
     try:
-        note = json.loads(s.recv(1024).decode("utf-8"))
-        
+        notes = json.loads(s.recv(1024).decode("utf-8"))["notes"]
+   
+    except json.decoder.JSONDecodeError:
+        print("Nothing valid lol")
+        return None
+   
+    print(notes)
+   
+    if len(notes) <= 0:
+        return None
+    
+    notesLoc = []
+    
+    for note in notes:
         x = note["x"]
         y = note["y"]
         w = note["w"]
@@ -73,20 +87,13 @@ def loadNote(num):
         
         col = pr.Color(note["r"], note["g"], note["b"], note["a"])
         text = note["text"]
-        
-        print(text)
-        
-    except Exception as e:
-        print(e)
-        return None
-        
-    return Note(x, y, h, w, col, text)
+        notesLoc.append(Note(x, y, h, w, col, text))
+       
+    return notesLoc
 
 if not "-i" in sys.argv:
-    i = 0
-    while loadNote(i):
-        i += 1
-        
+    loadNotes()
+
 if len(notes) == 0:
     Note(100, 100, 500, 300, pr.Color(0, 0, 0, 255))
 
@@ -97,12 +104,7 @@ while not pr.window_should_close():
         else: notes[i].reset_focused()
     
     pr.begin_drawing()
-    # TODO
-    # ADD KEYBOARD SUPPORT
-    # ACTUALLY USE THE SERVER
     pr.clear_background(pr.Color(0, 0, 0, 0))
-    # pr.draw_rectangle(37, 0, 25, 100, pr.Color(255, 255, 255, 255))
-    # pr.draw_rectangle(0, 37, 100, 25, pr.Color(255, 255, 255, 255))
     for note in notes:
         note.render()
     
@@ -157,7 +159,7 @@ while not pr.window_should_close():
         
     if pr.is_key_pressed(pr.KeyboardKey.KEY_N):
         if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
-            Note(random.randint(0, 1000), random.randint(0, 1000), 500, 300, pr.Color(random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255), 255))
+            Note(random.randint(0, 200)*5, random.randint(0, 200)*5, 500, 300, pr.Color(random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255), 255))
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_ENTER):
         notes[current_note].text += "\n"
@@ -171,6 +173,19 @@ while not pr.window_should_close():
    
    
     if pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT_CONTROL):
+        
+        obj = {"notes": [{"x": note.x, "y": note.y, "w": note.width, "h": note.height, "r": note.col.r, "g": note.col.g, "b": note.col.b, "a": note.col.a, "text": note.text} for note in notes]}
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(ADDR)
+        s.send("wnotes.json".encode("utf-8"))
+        s.close()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(ADDR)
+        s.send(json.dumps(obj=obj).encode("utf-8"))
+        s.close()
+        
+        '''
         old_packet = packet
         packet = notes[current_note].text
         jsonObject = {"x": notes[current_note].x, "y": notes[current_note].y, "w": notes[current_note].width, "h": notes[current_note].height, "r": notes[current_note].col.r, "g": notes[current_note].col.g, "b": notes[current_note].col.b, "a": notes[current_note].col.a, "text": notes[current_note].text}
@@ -184,6 +199,7 @@ while not pr.window_should_close():
             s.connect(ADDR)
             s.send(jsonString.encode("utf-8"))
             s.close()
+        '''
           
     pr.end_drawing()
     
