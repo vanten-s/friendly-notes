@@ -7,6 +7,9 @@ import random
 import json
 import sys
 import datetime
+import os
+
+os.system("python " + os.path.realpath(os.path.dirname(__file__)) + "/server.py &")
 
 IP = "127.0.0.1"
 PORT = 42069
@@ -206,3 +209,10 @@ while not pr.window_should_close():
     pr.end_drawing()
     
 pr.close_window()
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+s.connect(ADDR)
+s.send("q".encode("utf-8"))
+s.close()
+
+
