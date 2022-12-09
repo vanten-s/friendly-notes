@@ -56,9 +56,36 @@ class Note:
             current_height = round(current_height + y+10 - height)
             pr.draw_rectangle(x+1, current_height, 1, 20, pr.Color(255, 255, 255, 255))
 
+def note_outside_box(note, width, height):
+    transformed_x = note.x + note.width/2
+    transformed_y = note.y + note.height/2
+
+    recommended_x = note.x
+    recommended_y = note.y
+
+    outside = False
+
+    if transformed_x < 0: # Note to far right
+        recommended_x = 0 - note.width/2
+        outside = True
+
+    elif transformed_x > width: # Note to far left
+        recommended_x = width - note.width/2
+        outside = True
+
+    if transformed_y < 0: # Note to far up
+        recommended_y = 0 - note.height/2
+        outside = True
+
+    elif transformed_y > height: # Note to far down
+        recommended_y = height - note.height/2
+        outside = True
+
+    return (outside, recommended_x, recommended_y) # Return combined
+
 # Init gui
-pr.set_config_flags(pr.FLAG_WINDOW_RESIZABLE | pr.FLAG_WINDOW_TRANSPARENT )  # type: ignore
-pr.init_window(800, 600, "notes")
+pr.set_config_flags(pr.FLAG_WINDOW_RESIZABLE | pr.FLAG_WINDOW_TRANSPARENT ) # Set flags
+pr.init_window(800, 600, "notes") # Initialize window
 
 font = pr.load_font_ex("roboto.ttf", 20, None, 0)
 
@@ -158,8 +185,6 @@ while not pr.window_should_close():
             if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
                 notes[current_note].x += .5
 
-
-
     if pr.is_key_pressed(pr.KeyboardKey.KEY_BACKSPACE):
         try:
             notes[current_note].text = notes[current_note].text[:len(notes[current_note].text)-1]
@@ -185,6 +210,13 @@ while not pr.window_should_close():
         s.close()
         break
 
+
+    current_note_outside_box = note_outside_box(notes[current_note], pr.get_screen_width(), pr.get_screen_height())
+    print(current_note_outside_box)
+
+    if current_note_outside_box[0]:
+        notes[current_note].x = current_note_outside_box[1]
+        notes[current_note].y = current_note_outside_box[2]
 
     if pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT_CONTROL):
 
