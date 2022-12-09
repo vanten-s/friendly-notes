@@ -38,20 +38,22 @@ class Note:
         self.focused = False
 
     def render(self):
-        if self.focused: pr.draw_rectangle(self.x-5, self.y-5, self.width+10, self.height+10, pr.Color(255, 0, 0, 255))
-        pr.draw_rectangle(self.x, self.y, self.width, self.height, self.col)
+        x = round(self.x)
+        y = round(self.y)
+        if self.focused: pr.draw_rectangle(x-5, y-5, self.width+10, self.height+10, pr.Color(255, 0, 0, 255))
+        pr.draw_rectangle(x, y, self.width, self.height, self.col)
 
         # Render Text
-        height = pr.measure_text_ex(font, "abcdefghijklmnopqrstuvwxyzåäö", 20, 2).y
+        height = pr.measure_text_ex(font, "i", 20, 2).y
         current_height = 0
         for line in self.text.split("\n"):
-            pr.draw_text_ex(font, line, pr.Vector2(self.x+10, self.y+10+current_height), 20, 2, pr.Color(255, 255, 255, 255))
+            pr.draw_text_ex(font, line, pr.Vector2(x+10, y+10+current_height), 20, 2, pr.Color(255, 255, 255, 255))
             current_height += height
             last_line = line
 
         if self.focused:
-            x = round(pr.measure_text_ex(font, last_line, 20, 2).x + self.x+10)
-            current_height = round(current_height + self.y+10 - height)
+            x = round(pr.measure_text_ex(font, last_line, 20, 2).x + x+10)
+            current_height = round(current_height + y+10 - height)
             pr.draw_rectangle(x+1, current_height, 1, 20, pr.Color(255, 255, 255, 255))
 
 # Init gui
@@ -127,32 +129,36 @@ while not pr.window_should_close():
             current_note += 1
             current_note = current_note % len(notes)
 
-        else:
-            notes[current_note].x += 5
-            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
-                notes[current_note].x += 10
-
     elif pr.is_key_pressed(pr.KeyboardKey.KEY_LEFT):
         if not pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
             current_note -= 1
             current_note = current_note % len(notes)
 
-        else:
-            notes[current_note].x -= 5
-            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
-                notes[current_note].x -= 10
-
-    if pr.is_key_pressed(pr.KeyboardKey.KEY_UP):
+    if pr.is_key_down(pr.KeyboardKey.KEY_DOWN):
         if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
-            notes[current_note].y -= 5
+            notes[current_note].y += .1
             if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
-                notes[current_note].y -= 10
+                notes[current_note].y += .5
 
-    elif pr.is_key_pressed(pr.KeyboardKey.KEY_DOWN):
+    if pr.is_key_down(pr.KeyboardKey.KEY_UP):
         if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
-            notes[current_note].y += 5
+            notes[current_note].y -= .1
             if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
-                notes[current_note].y += 10
+                notes[current_note].y -= .5
+
+    if pr.is_key_down(pr.KeyboardKey.KEY_LEFT):
+        if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            notes[current_note].x -= .1
+            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
+                notes[current_note].x -= .5
+
+    if pr.is_key_down(pr.KeyboardKey.KEY_RIGHT):
+        if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_CONTROL):
+            notes[current_note].x += .1
+            if pr.is_key_down(pr.KeyboardKey.KEY_LEFT_ALT):
+                notes[current_note].x += .5
+
+
 
     if pr.is_key_pressed(pr.KeyboardKey.KEY_BACKSPACE):
         try:
